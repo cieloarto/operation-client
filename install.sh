@@ -1,22 +1,25 @@
 #!/bin/bash
 
-# 設定ファイルの読み込み
-source "./config.sh"
-
-SERVICE_FILE="/etc/systemd/system/$SERVICE_NAME.service"
+# GitHubから必要なファイルをダウンロード
+REPO_URL="https://raw.githubusercontent.com/cieloarto/operation-client/main"
+INSTALL_DIR="/usr/local/radish"
+SERVICE_FILE="/etc/systemd/system/radish.service"
 
 # インストールディレクトリの作成
 mkdir -p "$INSTALL_DIR"
 
-# スクリプトのコピー
-cp service.sh "$INSTALL_DIR/service.sh"
-cp config.sh "$INSTALL_DIR/config.sh"
-cp update.sh "$INSTALL_DIR/update.sh"
+# 必要なファイルをダウンロード
+curl -L "$REPO_URL/service.sh" -o "$INSTALL_DIR/service.sh"
+curl -L "$REPO_URL/config.sh" -o "$INSTALL_DIR/config.sh"
+curl -L "$REPO_URL/update.sh" -o "$INSTALL_DIR/update.sh"
+
+# 設定ファイルの読み込み
+source "$INSTALL_DIR/config.sh"
 
 # サービスファイルの作成
 cat <<EOL >"$SERVICE_FILE"
 [Unit]
-Description=MyService
+Description=Radish
 
 [Service]
 ExecStart=$INSTALL_DIR/service.sh
