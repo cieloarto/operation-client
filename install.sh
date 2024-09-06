@@ -2,8 +2,8 @@
 
 # GitHubから必要なファイルをダウンロード
 REPO_URL="https://raw.githubusercontent.com/cieloarto/operation-client/main"
-INSTALL_DIR="/usr/local/myservice"
 SERVICE_NAME="radish"
+INSTALL_DIR="/usr/local/$SERVICE_NAME"
 SERVICE_FILE="/etc/systemd/system/$SERVICE_NAME.service"
 
 # インストールディレクトリの作成
@@ -13,6 +13,10 @@ sudo mkdir -p "$INSTALL_DIR"
 sudo curl -L "$REPO_URL/service.sh" -o "$INSTALL_DIR/service.sh"
 sudo curl -L "$REPO_URL/config.sh" -o "$INSTALL_DIR/config.sh"
 sudo curl -L "$REPO_URL/update.sh" -o "$INSTALL_DIR/update.sh"
+
+# 実行権限を付与
+sudo chmod +x "$INSTALL_DIR/service.sh"
+sudo chmod +x "$INSTALL_DIR/update.sh"
 
 # 設定ファイルの読み込み
 source "$INSTALL_DIR/config.sh"
