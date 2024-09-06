@@ -2,6 +2,8 @@
 
 # GitHubリポジトリのURL
 REPO_URL="https://github.com/cieloarto/operation-client"
+SERVICE_NAME="radish"
+INSTALL_DIR="/usr/local/$SERVICE_NAME" # 必要に応じて設定
 VERSION_FILE="$INSTALL_DIR/version"
 
 # 現在のバージョンを読み込む
@@ -19,18 +21,38 @@ if [ "$LATEST_VERSION" != "$CURRENT_VERSION" ]; then
 
   # 最新バージョンをダウンロードして解凍
   curl -L "$REPO_URL/archive/$LATEST_VERSION.tar.gz" -o "$INSTALL_DIR/$LATEST_VERSION.tar.gz"
-  tar -xzf "$INSTALL_DIR/$LATEST_VERSION.tar.gz" -C "$INSTALL_DIR"
 
-  # スクリプトの置き換え
-  cp -r "$INSTALL_DIR/yourrepo-$LATEST_VERSION/"* "$INSTALL_DIR/"
+  # エラーチェック
+  if [ $? -ne 0 ]; then
+    echo "Error: Failed to download the latest version."
+    exit 1
+  fi
+
+  # ファイルを解凍
+  tar -xzf "$INSTALL_DIR/$LATEST_VERSION.tar.gz" -C "$INSTALL_DIR"
+  if [ $? -ne 0 ]; then
+    echo "Error: Failed to extract the latest version."
+    exit 1
+  fi
+
+  # スクリプトの置き換え（必要なファイルのみをコピー）
+  cp -r "$INSTALL_DIR/operation-client-$LATEST_VERSION/"* "$INSTALL_DIR/"
+  if [ $? -ne 0 ]; then
+    echo "Error: Failed to copy new files."
+    exit 1
+  fi
 
   # バージョンファイルの更新
   echo "$LATEST_VERSION" >"$VERSION_FILE"
 
   # サービスの再起動
-  systemctl restart "$SERVICE_NAME"
+  sudo systemctl restart "$SERVICE_NAME"
+  if [ $? -ne 0 ]; then
+    echo "Error: Failed to restart the service."
+    exit 1
+  fi
 
-  echo "Update completed."
+  echo "Update completed to version $LATEST_VERSION."
 else
-  echo "No updates available."
+  echo "No updates available. Current version: $CURRENT_VERSION."
 fi

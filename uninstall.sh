@@ -12,15 +12,25 @@ else
 fi
 
 SERVICE_FILE="/etc/systemd/system/$SERVICE_NAME.service"
+TIMER_FILE="/etc/systemd/system/$SERVICE_NAME.timer"
+UPDATE_SERVICE_FILE="/etc/systemd/system/radish-updater.service"
+UPDATE_TIMER_FILE="/etc/systemd/system/radish-updater.timer"
 
 # サービスの停止と無効化
 echo "Stopping and disabling the service..."
 sudo systemctl stop "$SERVICE_NAME"
 sudo systemctl disable "$SERVICE_NAME"
 
+sudo systemctl stop "$SERVICE_NAME.timer"
+sudo systemctl disable "$SERVICE_NAME.timer"
+
+sudo systemctl stop radish-updater.timer
+sudo systemctl disable radish-updater.timer
+
 # サービスファイルの削除
-echo "Removing service file..."
-sudo rm -f "$SERVICE_FILE"
+echo "Removing service and timer files..."
+sudo rm -f "$SERVICE_FILE" "$TIMER_FILE"
+sudo rm -f "$UPDATE_SERVICE_FILE" "$UPDATE_TIMER_FILE"
 
 # インストールディレクトリの削除
 echo "Removing installed files..."
