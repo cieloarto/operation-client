@@ -1,10 +1,15 @@
 #!/bin/bash
 
-# 設定ファイルの読み込み
+# サービス名とインストールディレクトリを手動で設定
 SERVICE_NAME="radish"
 INSTALL_DIR="/usr/local/$SERVICE_NAME"
 
-source "$INSTALL_DIR/config.sh"
+# 設定ファイルの確認と読み込み
+if [ -f "$INSTALL_DIR/config.sh" ]; then
+  source "$INSTALL_DIR/config.sh"
+else
+  echo "Config file not found, proceeding with default service name and directory."
+fi
 
 SERVICE_FILE="/etc/systemd/system/$SERVICE_NAME.service"
 
@@ -15,11 +20,11 @@ sudo systemctl disable "$SERVICE_NAME"
 
 # サービスファイルの削除
 echo "Removing service file..."
-rm -f "$SERVICE_FILE"
+sudo rm -f "$SERVICE_FILE"
 
 # インストールディレクトリの削除
 echo "Removing installed files..."
-rm -rf "$INSTALL_DIR"
+sudo rm -rf "$INSTALL_DIR"
 
 # systemdデーモンのリロード
 echo "Reloading systemd daemon..."
